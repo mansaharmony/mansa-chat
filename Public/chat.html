@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mansa Chat - Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        .chat-box {
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f4f4f4;
+        }
+
+        .message-input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .send-button {
+            background-color: #4CAF50;
+            color: #ffffff;
+        }
+
+        .logout-button {
+            background-color: #ff4c4c;
+            color: #ffffff;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .message strong {
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #333333;">Mansa Chat</h1>
+        <h2 style="color: #555555;">Chat Room</h2>
+        <div id="messages" class="chat-box"></div>
+        <input type="text" id="message-content" class="message-input" placeholder="Type your message">
+        <button onclick="sendMessage()" class="action-button send-button">Send</button>
+        <button onclick="logout()" class="action-button logout-button">Logout</button>
+    </div>
+
+    <script src="https://www.parsecdn.com/js/parse-1.18.0.min.js"></script>
+    <script>
+        // Initialize Parse SDK
+        Parse.initialize("YOUR_APP_ID", "YOUR_JAVASCRIPT_KEY");
+        Parse.serverURL = 'https://YOUR_PARSE_SERVER_URL';
+
+        // Subscribe to LiveQuery for real-time updates
+        const Message = Parse.Object.extend('Message');
+        const query = new Parse.Query(Message);
+        query.limit(50);  // Limit to 50 most recent messages
+        query.ascending('createdAt');  // Show oldest messages first
+
+        const subscription = query.subscribe();
+
+        subscription.on('open', () => {
+            console.log('LiveQuery connection opened.');
+        });
+
+        subscription.on('create', (message) => {
+            displayMessage(message);
+        });
+
+        subscription.on('update', (message) => {
+            console.log('Message updated:', message);
+        });
+
+        subscription.on('delete', (message) => {
+            console.log('Message deleted:', message);
+        });
+
+        // Load initial messages
+        async function loadMessages() {
+            try {
+                const results = await query.find();
+                results.forEach(displayMessage);
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        // Display message in the chat box
+        function displayMessage(message) {
+            const content = message.get('content');
+            const sender = message.get('sender');
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${content}`;
+            messagesDiv.appendChild(messageElement);
+            // Scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Send message
+        async function sendMessage() {
+            const content = document.getElementById('message-content').value;
+            const sender = Parse.User.current().get('username');
+            const Message = Parse.Object.extend('Message');
+            const message = new Message();
+            message.set('sender', sender);
+            message.set('content', content);
+            try {
+                await message.save();
+                document.getElementById('message-content').value = '';
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await Parse.User.logOut();
+                alert('Logged out successfully!');
+                window.location.href = 'index.html';  // Redirect to login page
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Load initial messages on page load
+        loadMessages();
+    </script>
+</body>
+</html>
