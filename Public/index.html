@@ -4,69 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mansa Chat</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;">
-    <div style="max-width: 600px; margin: 50px auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
-        <h1 style="text-align: center; color: #333333;">Mansa Chat</h1>
-        <div id="login" style="display: none;">
-            <h2 style="color: #555555;">Login</h2>
-            <input type="text" id="login-username" placeholder="Username" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #cccccc; border-radius: 5px;">
-            <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #cccccc; border-radius: 5px;">
-            <button onclick="login()" style="width: 100%; padding: 10px; background-color: #4CAF50; color: #ffffff; border: none; border-radius: 5px; cursor: pointer;">Login</button>
-            <p style="margin-top: 10px; text-align: center; color: #888888;">Don't have an account? <a href="#" onclick="showRegister()" style="color: #4CAF50;">Register</a></p>
-        </div>
-        <div id="register">
-            <h2 style="color: #555555;">Register</h2>
-            <input type="text" id="register-username" placeholder="Username" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #cccccc; border-radius: 5px;">
-            <input type="password" id="register-password" placeholder="Password" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #cccccc; border-radius: 5px;">
-            <button onclick="register()" style="width: 100%; padding: 10px; background-color: #4CAF50; color: #ffffff; border: none; border-radius: 5px; cursor: pointer;">Register</button>
-            <p style="margin-top: 10px; text-align: center; color: #888888;">Already have an account? <a href="#" onclick="showLogin()" style="color: #4CAF50;">Login</a></p>
-        </div>
-    </div>
-    <script>
-        // JavaScript functions for showing login/register forms
-        function showLogin() {
-            document.getElementById('login').style.display = 'block';
-            document.getElementById('register').style.display = 'none';
-        }
-
-        function showRegister() {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('register').style.display = 'block';
-        }
-
-        // Initialize Parse SDK
-        Parse.initialize("YOUR_APP_ID", "YOUR_JAVASCRIPT_KEY");
-        Parse.serverURL = 'https://YOUR_PARSE_SERVER_URL';
-
-        // User registration
-        async function register() {
-            const username = document.getElementById('register-username').value;
-            const password = document.getElementById('register-password').value;
-            try {
-                await Parse.Cloud.run('registerUser', { username, password });
-                alert('User registered successfully!');
-                showLogin();
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // User login
-        async function login() {
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
-            try {
-                await Parse.Cloud.run('loginUser', { username, password });
-                alert('Login successful!');
-                window.location.href = 'chat.html';
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // Initial state
-        showRegister();
-    </script>
+<body>
+    <h1>Welcome to Mansa Chat</h1>
+    <a href="chat.html">Go to Chat</a>
 </body>
 </html>
